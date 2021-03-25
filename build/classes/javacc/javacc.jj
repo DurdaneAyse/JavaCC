@@ -1,0 +1,62 @@
+options {
+  DEBUG_PARSER = true;
+}
+
+PARSER_BEGIN(javacc)
+
+import java.io.*;
+
+public class javacc{
+
+  public static void main(String args[]) throws ParseException {
+   
+    FileInputStream fs = null;
+     try{
+            fs = new FileInputStream("bilgi.txt");
+
+        }
+        catch(FileNotFoundException ex){
+        }
+        javacc example = new javacc(fs);
+            example.Start();
+    }
+}
+
+PARSER_END(javacc)
+
+TOKEN: {
+     < IF: "if" >
+    | < WHILE: "while" >
+    | < FOR: "for" >
+    |< SAYI: ["0"-"9"] >
+    | < KHARF: ["a"-"z"] >
+    | < BHARF: ["A"-"Z"] >
+    | < ALTTIRE: "_">
+    | < EKSI : "-" >
+
+    | <URL :  (<KHARF> | <BHARF> | <SAYI>)+("." (<KHARF> | <BHARF> )+)+ | ("http://") (<KHARF> | <BHARF> | <SAYI>)+("." (<KHARF> | <BHARF> )+)+|("www.")(<KHARF> | <BHARF> | <SAYI>)+("." (<KHARF> | <BHARF> )+)+|("http://")("www.") (<KHARF> | <BHARF> | <SAYI>)+("." (<KHARF> | <BHARF> )+)+ > 
+    | < INTEGER: (<SAYI>)+|(<EKSI>)(<SAYI>)+   >
+    | < DOUBLE:  ((<SAYI>) + "." (<SAYI>)*)|( (<EKSI>)(<SAYI>) + "." (<SAYI>)*) |  ( (<EKSI>)(<SAYI>)* "." (<SAYI>)+)|((<SAYI>)* "." (<SAYI>)+) >
+
+    | <HATA : (<SAYI>)+(<SAYI> | <KHARF> | <BHARF> )*>
+
+   
+
+    | < MAIL: (<KHARF> | <BHARF> | <SAYI> | <ALTTIRE>)+"@"(<KHARF> | <BHARF> | <SAYI>)+("."(<KHARF> | <BHARF>| <SAYI>)+)+>
+
+    | < DEGISKEN : (<KHARF> | <BHARF> | <ALTTIRE>)(<SAYI> | <KHARF> | <BHARF> | <ALTTIRE> )* >
+
+    | < YORUM: "--" (~["\n", "\r"])* ("\n" | "\r" | "\r\n") >
+    | < YORUMLAR:  "/*" (~["*"])* "*" (~["*","/"] (~["*"])* "*" | "*" )* "/" >
+
+}
+
+SKIP: {" " | "\n" | "\t" | "\r" }
+
+void Start() : 
+{}
+{
+    (
+      <DEGISKEN>| <INTEGER> | <DOUBLE> |  <IF> | <WHILE> | <FOR> |  <MAIL> | <URL> | <YORUM> | <YORUMLAR> | <HATA>
+    )*
+}
